@@ -1,0 +1,6 @@
+﻿{
+  "telegram_token": "",
+  "telegram_chat_id": "",
+  "auto_scan_minutes": 5,
+  "commission_rate": 0.07
+}
