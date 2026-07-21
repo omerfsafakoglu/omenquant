@@ -31,7 +31,7 @@ sample is not evidence of an edge.
 
 Fifteen instruments, trend-following logic, at most five concurrent positions:
 
-![portfolio results](docs/portfolio_results.png)
+![portfolio results](portfolio_results.png)
 
 Portfolio return was +191.0% against +44.2% for the BIST 100 over the same period, with a
 maximum drawdown of -11.1%. Nine of the fifteen instruments were profitable and six were not,
