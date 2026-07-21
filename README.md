@@ -8,7 +8,7 @@ Borsa Istanbul equities with commission and slippage applied, not live trading r
 The same trend-following logic on the same instrument over the same window, run with four
 different parameter sets:
 
-![parameter sensitivity](docs/parameter_sensitivity.png)
+![parameter sensitivity](C:\Users\omer.safakoglu\Downloads\parameter_sensitivity.png)
 
 | Config | Return | Max drawdown | Win rate | Trades |
 |---|---|---|---|---|
