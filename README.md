@@ -1,91 +1,46 @@
-# OmenQuant
+## Results
 
-A research and backtesting system for systematic trading strategies, built in Python.
+All figures below come from the reporting module in this repository. They are backtests on
+Borsa Istanbul equities with commission and slippage applied, not live trading results.
 
-The goal is not to find a strategy that looks good on a chart. It is to build a pipeline where a
-result can be trusted: clean data in, an honest backtest out, and enough validation to tell the
-difference between a real edge and an artefact of how the data was prepared.
+### Parameter sensitivity
 
-## What it does
+The same trend-following logic on the same instrument over the same window, run with four
+different parameter sets:
 
-- **Backtesting engine** with portfolio accounting, commission handling and trade-level bookkeeping.
-- **Walk-forward validation**, so a strategy is tested on data it was not tuned on rather than judged by a single in-sample run.
-- **Signal generation** for live monitoring, separated from the backtest logic.
-- **Portfolio runner** for evaluating several strategies together instead of one at a time.
-- **Reporting** with risk-adjusted metrics: Sharpe ratio, maximum drawdown, win rate and trade statistics.
-- **Streamlit dashboard** for reviewing results, positions and signals interactively.
+![parameter sensitivity](docs/parameter_sensitivity.png)
 
-Four systematic strategies have been backtested over two years of historical data.
+| Config | Return | Max drawdown | Win rate | Trades |
+|---|---|---|---|---|
+| A | +23.1% | -11.0% | 66.7% | 3 |
+| B | +12.4% | -19.4% | 25.0% | 8 |
+| C | +5.2% | -19.3% | 35.7% | 14 |
+| D | -21.0% | -26.0% | 0.0% | 6 |
 
-## Stack
+Buy and hold over the same period returned +11.4%.
 
-Python, pandas, NumPy, statsmodels, scipy, scikit-learn, Plotly, Streamlit, yfinance.
+This chart is the main reason the project exists. A single favourable run proves very little:
+the spread between the best and worst configuration here is over 44 percentage points on
+identical data. Any result worth reporting has to survive parameter variation, which is what
+the walk-forward module is for.
 
-A Rust port of the backtesting core is planned, mainly for speed on larger datasets and
-higher-frequency bars.
+Note also that config A produced its return from three trades. A high win rate on a small
+sample is not evidence of an edge.
 
-## Files
+### Portfolio run
 
-| File | Purpose |
-|---|---|
-| `backtester_pro.py` | Main backtesting engine |
-| `omenquant_backtest.py` | `BacktestEngine` used by the other modules |
-| `walk_forward_validator.py` | Walk-forward / out-of-sample validation |
-| `portfolio_runner.py` | Multi-strategy portfolio evaluation |
-| `backtest_reporter.py` | Performance and risk reporting |
-| `backtest_examples.py` | Worked examples of the API |
-| `live_signals.py` | Signal generation for live monitoring |
-| `omenquant_dashboard.py` | Streamlit dashboard |
-| `debug_signals.py` | Small script for inspecting signal output |
+Fifteen instruments, trend-following logic, at most five concurrent positions:
 
-`BACKTEST_SYSTEM_DOCUMENTATION.md` covers the engine in more detail and
-`EXECUTION_RUNBOOK.md` describes how the system is run.
+![portfolio results](docs/portfolio_results.png)
 
-## Getting started
+Portfolio return was +191.0% against +44.2% for the BIST 100 over the same period, with a
+maximum drawdown of -11.1%. Nine of the fifteen instruments were profitable and six were not,
+which is the expected shape for a trend-following approach: a minority of positions carries the
+result while position sizing and stops limit the rest.
 
-```bash
-git clone https://github.com/omerfsafakoglu/omenquant.git
-cd omenquant
-pip install -r requirements.txt
-```
+### Honest caveats
 
-Copy the example settings file and fill in your own values:
-
-```bash
-cp omenquant_settings.example.json omenquant_settings.json
-```
-
-Run the examples:
-
-```bash
-python backtest_examples.py
-```
-
-Or open the dashboard:
-
-```bash
-streamlit run omenquant_dashboard.py
-```
-
-## Example output
-
-<!-- Buraya bir ekran goruntusu ya da equity curve ekle:
-![dashboard](docs/dashboard.png)
--->
-
-## Notes and limitations
-
-- Backtest results are not live trading results. Slippage and fill assumptions are simplified.
-- Two years of data is a short sample. Results are treated as directional, not conclusive.
-- This is a personal research project. Nothing here is investment advice.
-
-## Roadmap
-
-- [ ] Rust implementation of the backtest engine
-- [ ] More detailed transaction cost modelling
-- [ ] Unit tests around the engine and portfolio accounting
-- [ ] Parameter sensitivity analysis across strategies
-
-## License
-
-MIT
+- Sharpe ratios in the single-instrument reports are computed against a Turkish lira risk-free rate, which has been high enough that strategies with strongly positive nominal returns still show negative excess return. The number is not comparable to a Sharpe ratio quoted in USD terms.
+- The single-instrument and portfolio reports do not currently use identical risk-metric conventions. Reconciling them is on the roadmap.
+- Sample sizes are small. Several runs above rest on fewer than ten trades.
+- Backtest fills are simplified. Real execution on these instruments would differ.
